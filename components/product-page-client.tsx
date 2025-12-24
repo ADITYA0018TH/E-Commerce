@@ -23,12 +23,12 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
   // Track if this product is being added to cart
   const [isAddingToCart, setIsAddingToCart] = useState(false)
 
-  if (loading || cartState.loading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading product...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading product...</p>
         </div>
       </div>
     )
@@ -38,10 +38,10 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-black mb-4">Product Not Found</h1>
-          <p className="text-gray-600 mb-6">This product doesn't exist in your Shopify store</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Product Not Found</h1>
+          <p className="text-muted-foreground mb-6">This product doesn't exist in your Shopify store</p>
           <Link href="/">
-            <Button className="bg-black text-white hover:bg-black/90">Return Home</Button>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Return Home</Button>
           </Link>
         </div>
       </div>
@@ -82,11 +82,11 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-8">
-          <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-black">
+          <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Link>
@@ -95,7 +95,7 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+            <div className="aspect-square bg-muted rounded-lg overflow-hidden border border-border">
               <img
                 src={images[selectedImage]?.url || "/placeholder.svg?height=500&width=500"}
                 alt={images[selectedImage]?.altText || product.title}
@@ -110,7 +110,7 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
                     key={index}
                     type="button"
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square bg-gray-50 rounded-lg overflow-hidden border-2 transition-colors ${selectedImage === index ? "border-black" : "border-gray-200 hover:border-gray-300"
+                    className={`aspect-square bg-muted rounded-lg overflow-hidden border-2 transition-colors ${selectedImage === index ? "border-primary" : "border-border hover:border-muted-foreground"
                       }`}
                   >
                     <img
@@ -127,18 +127,18 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              {hasDiscount && <Badge className="bg-black text-white mb-4">{discount}% OFF</Badge>}
+              {hasDiscount && <Badge className="bg-primary text-primary-foreground mb-4">{discount}% OFF</Badge>}
 
-              <h1 className="text-3xl md:text-4xl font-bold text-black mb-4">{product.title}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{product.title}</h1>
 
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-3xl font-bold text-black">${price.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-foreground">${price.toFixed(2)}</span>
                 {hasDiscount && (
                   <>
-                    <span className="text-xl text-gray-500 line-through">
+                    <span className="text-xl text-muted-foreground line-through">
                       ${Number.parseFloat(compareAtPrice).toFixed(2)}
                     </span>
-                    <Badge variant="secondary" className="bg-gray-100 text-black">
+                    <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                       {discount}% OFF
                     </Badge>
                   </>
@@ -146,7 +146,7 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
               </div>
 
               <div className="prose max-w-none mb-6">
-                <p className="text-gray-600 text-lg leading-relaxed">
+                <p className="text-muted-foreground text-lg leading-relaxed">
                   {product.description || "No description available for this product."}
                 </p>
               </div>
@@ -156,33 +156,33 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
             <form onSubmit={handleAddToCart} className="space-y-4">
               <div className="flex items-center gap-4">
                 <span className="font-medium">Quantity:</span>
-                <div className="flex items-center border border-gray-300 rounded-lg">
+                <div className="flex items-center border border-border rounded-lg">
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-2 hover:bg-gray-100"
+                    className="px-3 py-2 hover:bg-muted"
                     disabled={isAddingToCart}
                   >
                     -
                   </button>
-                  <span className="px-4 py-2 border-x border-gray-300">{quantity}</span>
+                  <span className="px-4 py-2 border-x border-border">{quantity}</span>
                   <button
                     type="button"
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-2 hover:bg-gray-100"
+                    className="px-3 py-2 hover:bg-muted"
                     disabled={isAddingToCart}
                   >
                     +
                   </button>
                 </div>
-                <span className="text-sm text-gray-500">{variant?.availableForSale ? "In stock" : "Out of stock"}</span>
+                <span className="text-sm text-muted-foreground">{variant?.availableForSale ? "In stock" : "Out of stock"}</span>
               </div>
 
               <div className="flex gap-4">
                 <Button
                   type="submit"
                   disabled={!variant?.availableForSale || isAddingToCart}
-                  className="flex-1 bg-black text-white hover:bg-black/90 text-lg py-6 disabled:opacity-50"
+                  className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 text-lg py-6 disabled:opacity-50"
                 >
                   {isAddingToCart ? (
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />
@@ -196,16 +196,16 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
 
             {/* Features */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Truck className="w-4 h-4 text-black" />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Truck className="w-4 h-4 text-foreground" />
                 Free Shipping
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Shield className="w-4 h-4 text-black" />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Shield className="w-4 h-4 text-foreground" />
                 Secure Payment
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <RotateCcw className="w-4 h-4 text-black" />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <RotateCcw className="w-4 h-4 text-foreground" />
                 Easy Returns
               </div>
             </div>
@@ -214,15 +214,15 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
 
         {/* Product Details Tabs */}
         <div className="mt-16">
-          <div className="border-b border-gray-200">
+          <div className="border-b border-border">
             <nav className="flex space-x-8">
               {["description", "details"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${activeTab === tab
-                      ? "border-black text-black"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                     }`}
                 >
                   {tab}
@@ -234,7 +234,7 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
           <div className="py-8">
             {activeTab === "description" && (
               <div className="prose max-w-none">
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   {product.description || "No detailed description available for this product."}
                 </p>
               </div>
@@ -243,18 +243,18 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
             {activeTab === "details" && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex justify-between py-2 border-b border-gray-200">
-                    <span className="font-medium text-black">Product ID:</span>
-                    <span className="text-gray-600">{product.id.split("/").pop()}</span>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="font-medium text-foreground">Product ID:</span>
+                    <span className="text-muted-foreground">{product.id.split("/").pop()}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-200">
-                    <span className="font-medium text-black">Handle:</span>
-                    <span className="text-gray-600">{product.handle}</span>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="font-medium text-foreground">Handle:</span>
+                    <span className="text-muted-foreground">{product.handle}</span>
                   </div>
                   {variant && (
-                    <div className="flex justify-between py-2 border-b border-gray-200">
-                      <span className="font-medium text-black">Variant:</span>
-                      <span className="text-gray-600">{variant.title}</span>
+                    <div className="flex justify-between py-2 border-b border-border">
+                      <span className="font-medium text-foreground">Variant:</span>
+                      <span className="text-muted-foreground">{variant.title}</span>
                     </div>
                   )}
                 </div>

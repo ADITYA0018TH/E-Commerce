@@ -9,10 +9,10 @@ export function Categories() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-muted">
         <div className="container mx-auto px-4 text-center">
           <Loader2 className="animate-spin h-12 w-12 mx-auto mb-4" />
-          <p className="text-gray-600">Loading categories...</p>
+          <p className="text-muted-foreground">Loading categories...</p>
         </div>
       </section>
     )
@@ -20,7 +20,7 @@ export function Categories() {
 
   if (error) {
     return (
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-muted">
         <div className="container mx-auto px-4 text-center">
           <p className="text-red-500">Error loading categories: {error}</p>
         </div>
@@ -31,20 +31,20 @@ export function Categories() {
   // Show nothing or empty state if no collections
   if (collections.length === 0) {
     return (
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-muted">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-500">No categories found.</p>
+          <p className="text-muted-foreground">No categories found.</p>
         </div>
       </section>
     )
   }
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-muted">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">Shop by Category</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Explore our wide range of products</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Shop by Category</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">Explore our wide range of products</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -52,9 +52,9 @@ export function Categories() {
             <Link
               key={collection.id}
               href={`/products?collection=${collection.handle}`}
-              className="group relative h-80 overflow-hidden rounded-2xl shadow-lg border border-gray-200 block"
+              className="group relative h-80 overflow-hidden rounded-2xl shadow-lg border border-border block"
             >
-              <div className="absolute inset-0 bg-gray-200">
+              <div className="absolute inset-0 bg-muted">
                 {collection.image && (
                   <img
                     src={collection.image.url}

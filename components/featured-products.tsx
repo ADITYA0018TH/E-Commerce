@@ -42,10 +42,10 @@ export function FeaturedProducts() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4 text-center">
           <Loader2 className="animate-spin h-12 w-12 mx-auto mb-4" />
-          <p className="text-gray-600">Loading featured products...</p>
+          <p className="text-muted-foreground">Loading featured products...</p>
         </div>
       </section>
     )
@@ -53,7 +53,7 @@ export function FeaturedProducts() {
 
   if (error) {
     return (
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4 text-center">
           <p className="text-red-600">Error loading products: {error}</p>
         </div>
@@ -64,20 +64,20 @@ export function FeaturedProducts() {
   // Show generic message if no products
   if (products.length === 0) {
     return (
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-600">No featured products found.</p>
+          <p className="text-muted-foreground">No featured products found.</p>
         </div>
       </section>
     )
   }
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">Featured Products</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Featured Products</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Handpicked items from our collection
           </p>
         </div>
@@ -110,7 +110,7 @@ export function FeaturedProducts() {
 
             return (
               <div key={productData.id} className="h-full">
-                <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 h-full flex flex-col relative">
+                <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 border border-border h-full flex flex-col relative">
                   <CardContent className="p-0 flex flex-col h-full">
                     <div className="relative overflow-hidden">
                       <Link href={`/product/${productData.handle}`}>
@@ -122,13 +122,13 @@ export function FeaturedProducts() {
                       </Link>
 
                       {productData.hasDiscount && (
-                        <Badge className="absolute top-4 left-4 bg-black text-white">{productData.discount}% OFF</Badge>
+                        <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{productData.discount}% OFF</Badge>
                       )}
 
                       <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <Button
                           type="button"
-                          className="bg-white text-black hover:bg-gray-100 border border-gray-200"
+                          className="bg-background text-foreground hover:bg-muted border border-border"
                           onClick={(e) => handleAddToCart(product, e)}
                           disabled={!productData.available || isAddingThisProduct}
                         >
@@ -144,19 +144,19 @@ export function FeaturedProducts() {
 
                     <div className="p-6 flex flex-col flex-grow">
                       <Link href={`/product/${productData.handle}`}>
-                        <h3 className="font-semibold text-lg text-black mb-3 group-hover:text-gray-600 transition-colors cursor-pointer line-clamp-2 h-14 leading-7">
+                        <h3 className="font-semibold text-lg text-foreground mb-3 group-hover:text-muted-foreground transition-colors cursor-pointer line-clamp-2 h-14 leading-7">
                           {productData.title}
                         </h3>
                       </Link>
 
                       <div className="flex items-center gap-2 mb-4 h-8">
-                        <span className="text-2xl font-bold text-black">${productData.price.toFixed(2)}</span>
+                        <span className="text-2xl font-bold text-foreground">${productData.price.toFixed(2)}</span>
                         {productData.hasDiscount && productData.compareAtPrice && (
                           <>
-                            <span className="text-lg text-gray-500 line-through">
+                            <span className="text-lg text-muted-foreground line-through">
                               ${productData.compareAtPrice.toFixed(2)}
                             </span>
-                            <Badge variant="secondary" className="bg-gray-100 text-black text-xs">
+                            <Badge variant="secondary" className="bg-secondary text-secondary-foreground text-xs">
                               {productData.discount}% OFF
                             </Badge>
                           </>
@@ -166,7 +166,7 @@ export function FeaturedProducts() {
                       <div className="mt-auto">
                         <Button
                           type="button"
-                          className="w-full bg-black text-white hover:bg-black/90"
+                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                           onClick={(e) => handleAddToCart(product, e)}
                           disabled={!productData.available || isAddingThisProduct}
                         >
@@ -186,7 +186,7 @@ export function FeaturedProducts() {
             <Button
               size="lg"
               variant="outline"
-              className="text-lg px-8 py-6 border-black text-black hover:bg-black hover:text-white bg-transparent"
+              className="text-lg px-8 py-6 border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-transparent"
             >
               View All Products
             </Button>

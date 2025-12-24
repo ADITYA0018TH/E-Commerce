@@ -46,7 +46,7 @@ export function Hero() {
   }, [featuredProduct])
 
   return (
-    <section className="relative min-h-screen bg-white overflow-hidden">
+    <section className="relative min-h-screen bg-background overflow-hidden">
       {/* Simplified container to match other components */}
       <div className="container mx-auto px-4 h-screen flex items-center">
         <div className="w-full">
@@ -54,14 +54,14 @@ export function Hero() {
             {/* Left content - simplified */}
             <div className="space-y-8">
               {/* Simplified badge */}
-              <Badge variant="outline" className="border-black text-black bg-transparent px-4 py-2 w-fit">
-                <Star className="w-4 h-4 mr-2 fill-black" />
+              <Badge variant="outline" className="border-primary text-foreground bg-transparent px-4 py-2 w-fit">
+                <Star className="w-4 h-4 mr-2 fill-primary" />
                 {isShopifyConfigured ? "New Collection Available" : "Demo Store"}
               </Badge>
 
               {/* Dynamic hero title */}
               <div>
-                <h1 className="text-5xl md:text-7xl font-bold text-black mb-6 leading-tight">
+                <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
                   {storeName === "Shopify Template" ? (
                     <>
                       Shop the
@@ -75,7 +75,7 @@ export function Hero() {
                   )}
                 </h1>
 
-                <p className="text-xl text-black/70 mb-8 max-w-lg leading-relaxed">
+                <p className="text-xl text-muted-foreground mb-8 max-w-lg leading-relaxed">
                   {isShopifyConfigured
                     ? "Discover amazing products that blend style, innovation, and quality."
                     : "This is a demo storefront. Connect your Shopify store to see real products."}
@@ -85,7 +85,7 @@ export function Hero() {
               {/* Functional buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/products">
-                  <Button size="lg" className="bg-black text-white hover:bg-black/90 text-lg px-8 py-6 border-0">
+                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 border-0">
                     Shop Now
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
@@ -94,7 +94,7 @@ export function Hero() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-black text-black hover:bg-black hover:text-white text-lg px-8 py-6 bg-transparent"
+                    className="border-primary text-foreground hover:bg-primary hover:text-primary-foreground text-lg px-8 py-6 bg-transparent"
                   >
                     Explore Collections
                   </Button>
@@ -106,16 +106,16 @@ export function Hero() {
             <div className="relative">
               {loading ? (
                 // Simplified loading state
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                  <div className="w-full h-80 bg-gray-200 rounded-lg mb-4 animate-pulse"></div>
+                <div className="bg-muted rounded-lg p-6 border border-border">
+                  <div className="w-full h-80 bg-muted-foreground/20 rounded-lg mb-4 animate-pulse"></div>
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                    <div className="h-4 bg-muted-foreground/20 rounded animate-pulse"></div>
+                    <div className="h-3 bg-muted-foreground/20 rounded w-1/2 animate-pulse"></div>
                   </div>
                 </div>
               ) : productDetails ? (
                 // Real product showcase
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <div className="bg-muted rounded-lg p-6 border border-border">
                   <Link href={`/product/${productDetails.handle}`}>
                     <img
                       src={productDetails.image || "/placeholder.svg"}
@@ -128,23 +128,23 @@ export function Hero() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Link href={`/product/${productDetails.handle}`}>
-                        <h3 className="font-semibold text-lg text-black hover:text-gray-600 transition-colors cursor-pointer line-clamp-1">
+                        <h3 className="font-semibold text-lg text-foreground hover:text-muted-foreground transition-colors cursor-pointer line-clamp-1">
                           {productDetails.title}
                         </h3>
                       </Link>
-                      {productDetails.hasDiscount && <Badge className="bg-black text-white text-xs">Sale</Badge>}
+                      {productDetails.hasDiscount && <Badge className="bg-primary text-primary-foreground text-xs">Sale</Badge>}
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-black text-black" />
+                          <Star key={i} className="w-4 h-4 fill-primary text-primary" />
                         ))}
-                        <span className="text-sm text-gray-600 ml-1">(4.9)</span>
+                        <span className="text-sm text-muted-foreground ml-1">(4.9)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-xl text-black">${productDetails.price.toFixed(2)}</span>
+                        <span className="font-bold text-xl text-foreground">${productDetails.price.toFixed(2)}</span>
                         {productDetails.hasDiscount && productDetails.compareAtPrice && (
-                          <span className="text-sm text-gray-500 line-through">
+                          <span className="text-sm text-muted-foreground line-through">
                             ${productDetails.compareAtPrice.toFixed(2)}
                           </span>
                         )}
@@ -154,7 +154,7 @@ export function Hero() {
                 </div>
               ) : (
                 // Placeholder product showcase
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 relative">
+                <div className="bg-muted rounded-lg p-6 border border-border relative">
                   {!isShopifyConfigured && (
                     <div className="absolute top-2 right-2">
                       <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-xs">
@@ -169,19 +169,19 @@ export function Hero() {
                   />
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-lg text-black">Premium Product</h3>
-                      <Badge className="bg-black text-white text-xs">New</Badge>
+                      <h3 className="font-semibold text-lg text-foreground">Premium Product</h3>
+                      <Badge className="bg-primary text-primary-foreground text-xs">New</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-black text-black" />
+                          <Star key={i} className="w-4 h-4 fill-primary text-primary" />
                         ))}
-                        <span className="text-sm text-gray-600 ml-1">(4.9)</span>
+                        <span className="text-sm text-muted-foreground ml-1">(4.9)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-xl text-black">$99.99</span>
-                        <span className="text-sm text-gray-500 line-through">$129.99</span>
+                        <span className="font-bold text-xl text-foreground">$99.99</span>
+                        <span className="text-sm text-muted-foreground line-through">$129.99</span>
                       </div>
                     </div>
                   </div>
@@ -191,23 +191,23 @@ export function Hero() {
           </div>
 
           {/* Bottom stats - show real or placeholder data */}
-          <div className="mt-20 pt-8 border-t border-gray-200">
+          <div className="mt-20 pt-8 border-t border-border">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>
-                <p className="text-2xl font-bold text-black">10K+</p>
-                <p className="text-gray-600 text-sm">Happy Customers</p>
+                <p className="text-2xl font-bold text-foreground">10K+</p>
+                <p className="text-muted-foreground text-sm">Happy Customers</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-black">{isShopifyConfigured ? `${products.length}+` : "50+"}</p>
-                <p className="text-gray-600 text-sm">Products</p>
+                <p className="text-2xl font-bold text-foreground">{isShopifyConfigured ? `${products.length}+` : "50+"}</p>
+                <p className="text-muted-foreground text-sm">Products</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-black">99%</p>
-                <p className="text-gray-600 text-sm">Satisfaction</p>
+                <p className="text-2xl font-bold text-foreground">99%</p>
+                <p className="text-muted-foreground text-sm">Satisfaction</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-black">24/7</p>
-                <p className="text-gray-600 text-sm">Support</p>
+                <p className="text-2xl font-bold text-foreground">24/7</p>
+                <p className="text-muted-foreground text-sm">Support</p>
               </div>
             </div>
           </div>

@@ -17,19 +17,30 @@ export const metadata: Metadata = {
   description: `Discover amazing products at ${storeName}. Quality, style, and innovation in every purchase.`,
 }
 
+import { ThemeProvider } from "@/components/theme-provider"
+
+// ... imports remain the same
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <CartProvider>
-          <Navbar />
-          {children}
-          <CartDrawer />
-        </CartProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <CartProvider>
+            <Navbar />
+            {children}
+            <CartDrawer />
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
