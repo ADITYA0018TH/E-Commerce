@@ -4,11 +4,12 @@ import type React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/context/cart-context"
 import { ShoppingCart, Truck, Shield, RotateCcw, ArrowLeft, Loader2 } from "lucide-react"
 import { useState } from "react"
 import Link from "next/link"
-import { useProduct } from "@/hooks/use-shopify"
+import { useProduct, useProducts } from "@/hooks/use-shopify"
 
 interface ProductPageClientProps {
   productHandle: string
@@ -16,12 +17,14 @@ interface ProductPageClientProps {
 
 export function ProductPageClient({ productHandle }: ProductPageClientProps) {
   const { product, loading, error } = useProduct(productHandle)
+  const { products: allProducts } = useProducts()
   const { addItem, state: cartState } = useCart()
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState("description")
   // Track if this product is being added to cart
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [addingRelatedProducts, setAddingRelatedProducts] = useState<Set<string>>(new Set())
 
   if (loading) {
     return (
@@ -39,7 +42,7 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Product Not Found</h1>
-          <p className="text-muted-foreground mb-6">This product doesn't exist in your Shopify store</p>
+          <p className="text-muted-foreground mb-6">This product doesn't exist in your store</p>
           <Link href="/">
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Return Home</Button>
           </Link>
@@ -56,6 +59,11 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
   const discount = hasDiscount
     ? Math.round(((Number.parseFloat(compareAtPrice) - price) / Number.parseFloat(compareAtPrice)) * 100)
     : 0
+
+  // Get related products (exclude current product, limit to 4)
+  const relatedProducts = allProducts
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4)
 
   const handleAddToCart = async (event: React.FormEvent) => {
     // Prevent form submission and page reload
@@ -77,6 +85,31 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
         )
       } finally {
         setIsAddingToCart(false)
+      }
+    }
+  }
+
+  const handleAddRelatedToCart = async (relatedProduct: any, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const relatedVariant = relatedProduct.variants.edges[0]?.node
+    if (relatedVariant) {
+      setAddingRelatedProducts((prev) => new Set(prev).add(relatedProduct.id))
+      try {
+        await addItem({
+          id: relatedVariant.id,
+          name: relatedProduct.title,
+          price: Number.parseFloat(relatedVariant.price.amount),
+          image: relatedProduct.images.edges[0]?.node.url || "/placeholder.svg",
+          handle: relatedProduct.handle,
+        })
+      } finally {
+        setAddingRelatedProducts((prev) => {
+          const newSet = new Set(prev)
+          newSet.delete(relatedProduct.id)
+          return newSet
+        })
       }
     }
   }
@@ -262,7 +295,61 @@ export function ProductPageClient({ productHandle }: ProductPageClientProps) {
             )}
           </div>
         </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">Related Products</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relatedProduct) => {
+                const relatedVariant = relatedProduct.variants.edges[0]?.node
+                const relatedImage = relatedProduct.images.edges[0]?.node
+                const relatedPrice = relatedVariant ? Number.parseFloat(relatedVariant.price.amount) : 0
+                const isAddingThisProduct = addingRelatedProducts.has(relatedProduct.id)
+
+                return (
+                  <Card key={relatedProduct.id} className="group overflow-hidden hover:shadow-lg transition-all duration-300 border border-border">
+                    <CardContent className="p-0">
+                      <Link href={`/product/${relatedProduct.handle}`}>
+                        <div className="relative overflow-hidden">
+                          <img
+                            src={relatedImage?.url || "/placeholder.svg"}
+                            alt={relatedImage?.altText || relatedProduct.title}
+                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      </Link>
+                      <div className="p-4">
+                        <Link href={`/product/${relatedProduct.handle}`}>
+                          <h3 className="font-semibold text-foreground mb-2 line-clamp-2 hover:text-muted-foreground transition-colors">
+                            {relatedProduct.title}
+                          </h3>
+                        </Link>
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-bold text-foreground">${relatedPrice.toFixed(2)}</span>
+                          <Button
+                            size="sm"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
+                            onClick={(e) => handleAddRelatedToCart(relatedProduct, e)}
+                            disabled={!relatedVariant?.availableForSale || isAddingThisProduct}
+                          >
+                            {isAddingThisProduct ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <ShoppingCart className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
 }
+
