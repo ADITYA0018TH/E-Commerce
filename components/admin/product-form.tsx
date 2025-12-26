@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Loader2, Upload, AlertCircle } from "lucide-react"
-import { addSpringProduct, updateSpringProduct, type SpringProduct, getSpringProductImageUrl } from "@/lib/spring-client"
+import { addSpringProduct, updateSpringProduct, type SpringProduct } from "@/lib/spring-client"
 
 interface ProductFormProps {
     initialData?: SpringProduct
@@ -34,7 +34,7 @@ export function ProductForm({ initialData, isEditing = false }: ProductFormProps
 
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(
-        isEditing && initialData ? getSpringProductImageUrl(initialData.id) : null
+        isEditing && initialData?.imageUrl ? initialData.imageUrl : null
     )
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

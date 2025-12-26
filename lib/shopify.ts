@@ -1,7 +1,6 @@
 import {
   getSpringProducts,
   getSpringProduct,
-  getSpringProductImageUrl,
   type SpringProduct,
 } from "./spring-client"
 
@@ -107,7 +106,8 @@ export interface ShopifyCart {
 // Mapper function: SpringProduct -> ShopifyProduct
 function mapSpringToShopify(product: SpringProduct): ShopifyProduct {
   const price = product.price.toString()
-  const imageUrl = product.imageName ? getSpringProductImageUrl(product.id) : "/placeholder.svg"
+  // Use imageUrl directly from Cloudinary (returned by backend)
+  const imageUrl = product.imageUrl || "/placeholder.svg"
 
   return {
     id: product.id.toString(),
@@ -233,11 +233,11 @@ function recalculateCartTotals(cart: ShopifyCart): ShopifyCart {
     const price = parseFloat(node.merchandise.price.amount)
     total += price * node.quantity
   })
-  
+
   const totalStr = total.toFixed(2)
   cart.cost.totalAmount.amount = totalStr
   cart.cost.subtotalAmount.amount = totalStr
-  
+
   return cart
 }
 
@@ -256,14 +256,14 @@ export async function addCartLines(
   lines: Array<{ merchandiseId: string; quantity: number }>,
 ): Promise<ShopifyCart> {
   const cart = getLocalCart()
-  
+
   for (const line of lines) {
     // We need product details to add to cart. In a real backend, ID is enough.
     // Here, we have to fetch the product "optimistically" or "server-side" style.
     // Since this is client-side, we can fetch from Spring API.
     const id = parseInt(line.merchandiseId)
     const product = await getSpringProduct(id)
-    
+
     if (!product) continue
 
     const mapped = mapSpringToShopify(product)
@@ -309,14 +309,14 @@ export async function updateCartLines(
   lines: Array<{ id: string; quantity: number }>,
 ): Promise<ShopifyCart> {
   const cart = getLocalCart()
-  
+
   for (const line of lines) {
     const existingLine = cart.lines.edges.find((edge) => edge.node.id === line.id)
     if (existingLine) {
       existingLine.node.quantity = line.quantity
     }
   }
-  
+
   // Remove 0 quantity
   cart.lines.edges = cart.lines.edges.filter((edge) => edge.node.quantity > 0)
 
@@ -327,9 +327,9 @@ export async function updateCartLines(
 
 export async function removeCartLines(cartId: string, lineIds: string[]): Promise<ShopifyCart> {
   const cart = getLocalCart()
-  
+
   cart.lines.edges = cart.lines.edges.filter((edge) => !lineIds.includes(edge.node.id))
-  
+
   const updatedCart = recalculateCartTotals(cart)
   saveLocalCart(updatedCart)
   return updatedCart

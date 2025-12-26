@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Edit, Trash2, Loader2, MoreHorizontal } from "lucide-react"
-import { getSpringProducts, deleteSpringProduct, type SpringProduct, getSpringProductImageUrl } from "@/lib/spring-client"
+import { getSpringProducts, deleteSpringProduct, type SpringProduct } from "@/lib/spring-client"
 
 export default function AdminPage() {
     const [products, setProducts] = useState<SpringProduct[]>([])
@@ -83,7 +83,7 @@ export default function AdminPage() {
                                     <tr key={product.id} className="border-b hover:bg-muted/50">
                                         <td className="px-4 py-3">
                                             <img
-                                                src={getSpringProductImageUrl(product.id)}
+                                                src={product.imageUrl || "/placeholder.svg"}
                                                 alt={product.name}
                                                 className="h-10 w-10 object-cover rounded"
                                                 onError={(e) => (e.currentTarget.src = "/placeholder.svg")}

@@ -10,22 +10,31 @@ import { useCart } from "@/context/cart-context"
 import { ShoppingCart, Search, Filter, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useSearchParams, useRouter } from "next/navigation"
 
 export function ProductsPageClient() {
   const { products, loading, error } = useProducts()
   const { addItem } = useCart()
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("featured")
-  const [selectedCollection, setSelectedCollection] = useState<string | null>(null)
   const [addingProducts, setAddingProducts] = useState<Set<string>>(new Set())
+  const [showFilters, setShowFilters] = useState(false)
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const collectionParam = urlParams.get("collection")
-    if (collectionParam) {
-      setSelectedCollection(collectionParam)
-    }
-  }, [])
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const selectedCollection = searchParams.get("collection")
+
+  // Available filter categories
+  const categories = [
+    { id: "electronics", label: "Electronics" },
+    { id: "fashion", label: "Fashion" },
+    { id: "accessories", label: "Accessories" },
+    { id: "gaming", label: "Gaming" },
+    { id: "photography", label: "Photography" },
+    { id: "lifestyle", label: "Lifestyle" },
+    { id: "tech-gear", label: "Tech Gear" },
+    { id: "premium", label: "Premium" },
+  ]
 
   const handleAddToCart = async (product: any, event: React.MouseEvent) => {
     event.preventDefault()
@@ -81,7 +90,33 @@ export function ProductsPageClient() {
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
 
-    return matchesSearch
+    // Filter by category if selected
+    const matchesCategory = !selectedCollection ||
+      product.title.toLowerCase().includes(selectedCollection.toLowerCase()) ||
+      product.description.toLowerCase().includes(selectedCollection.toLowerCase())
+
+    return matchesSearch && matchesCategory
+  })
+
+  // Sort products based on sortBy selection
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    const priceA = a.variants?.edges?.[0]?.node?.price?.amount
+      ? Number.parseFloat(a.variants.edges[0].node.price.amount)
+      : 0
+    const priceB = b.variants?.edges?.[0]?.node?.price?.amount
+      ? Number.parseFloat(b.variants.edges[0].node.price.amount)
+      : 0
+
+    switch (sortBy) {
+      case "price-low":
+        return priceA - priceB
+      case "price-high":
+        return priceB - priceA
+      case "name":
+        return a.title.localeCompare(b.title)
+      default: // "featured"
+        return 0
+    }
   })
 
   return (
@@ -89,7 +124,9 @@ export function ProductsPageClient() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {selectedCollection ? `Collection: ${selectedCollection}` : "All Products"}
+            {selectedCollection
+              ? selectedCollection.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+              : "All Products"}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Discover our complete collection of amazing products
@@ -98,10 +135,7 @@ export function ProductsPageClient() {
             <Button
               variant="outline"
               className="mt-4 border-border bg-transparent"
-              onClick={() => {
-                setSelectedCollection(null)
-                window.history.pushState({}, "", "/products")
-              }}
+              onClick={() => router.push("/products")}
             >
               Clear Filter
             </Button>
@@ -132,20 +166,52 @@ export function ProductsPageClient() {
               <option value="name">Name A-Z</option>
             </select>
 
-            <Button variant="outline" className="px-6 border-border bg-transparent">
+            <Button
+              variant="outline"
+              className={`px-6 border-border bg-transparent ${showFilters ? 'bg-primary text-primary-foreground' : ''}`}
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter className="w-4 h-4 mr-2" />
               Filter
             </Button>
           </div>
         </div>
 
-        {filteredProducts.length === 0 ? (
+        {/* Filter Panel */}
+        {showFilters && (
+          <div className="mb-8 p-6 bg-card rounded-xl border border-border">
+            <h3 className="font-semibold text-foreground mb-4">Filter by Category</h3>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={!selectedCollection ? "default" : "outline"}
+                size="sm"
+                onClick={() => router.push("/products")}
+                className={!selectedCollection ? "bg-primary text-primary-foreground" : "border-border"}
+              >
+                All
+              </Button>
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCollection === category.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => router.push(`/products?collection=${category.id}`)}
+                  className={selectedCollection === category.id ? "bg-primary text-primary-foreground" : "border-border"}
+                >
+                  {category.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {sortedProducts.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground text-lg">No products found matching your search.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map((product) => {
+            {sortedProducts.map((product) => {
               const variant = product.variants.edges[0]?.node
               const image = product.images.edges[0]?.node
               const price = variant ? Number.parseFloat(variant.price.amount) : 0

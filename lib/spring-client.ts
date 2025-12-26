@@ -10,9 +10,7 @@ export interface SpringProduct {
   releaseDate: string;
   productAvailable: boolean;
   stockQuantity: number;
-  imageName: string;
-  imageType: string;
-  // imageData is usually omitted in lists
+  imageUrl: string; // Cloudinary URL returned directly from backend
 }
 
 export async function getSpringProducts(): Promise<SpringProduct[]> {
@@ -30,9 +28,6 @@ export async function getSpringProduct(id: number): Promise<SpringProduct | null
   return res.json();
 }
 
-export function getSpringProductImageUrl(id: number): string {
-  return `${API_BASE_URL}/api/product/${id}/image`;
-}
 
 export async function searchSpringProducts(keyword: string): Promise<SpringProduct[]> {
   const res = await fetch(`${API_BASE_URL}/api/products/search?keyword=${encodeURIComponent(keyword)}`);
@@ -42,7 +37,7 @@ export async function searchSpringProducts(keyword: string): Promise<SpringProdu
 
 export async function addSpringProduct(productData: SpringProduct, imageFile: File): Promise<SpringProduct | null> {
   const formData = new FormData();
-  
+
   // Spring @RequestPart expects the "product" part to be JSON with valid content-type
   const productBlob = new Blob([JSON.stringify(productData)], { type: 'application/json' });
   formData.append('product', productBlob);
@@ -62,7 +57,7 @@ export async function addSpringProduct(productData: SpringProduct, imageFile: Fi
 
 export async function updateSpringProduct(id: number, productData: SpringProduct, imageFile: File): Promise<string | null> {
   const formData = new FormData();
-  
+
   const productBlob = new Blob([JSON.stringify(productData)], { type: 'application/json' });
   formData.append('product', productBlob);
   formData.append('imageFile', imageFile);
